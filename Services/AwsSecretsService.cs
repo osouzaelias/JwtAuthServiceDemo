@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Amazon.SecretsManager;
+using Amazon.SecretsManager.Extensions.Caching;
 using Amazon.SecretsManager.Model;
 using JwtAuthServiceDemo.Models;
 
@@ -8,6 +9,7 @@ namespace JwtAuthServiceDemo.Services;
 public class AwsSecretsService : IAwsSecretsService
 {
     private readonly IAmazonSecretsManager _secretsManager;
+    private readonly SecretsManagerCache _cache;
     private readonly ILogger<AwsSecretsService> _logger;
     private readonly IConfiguration _configuration;
 
@@ -19,19 +21,16 @@ public class AwsSecretsService : IAwsSecretsService
         _secretsManager = secretsManager;
         _logger = logger;
         _configuration = configuration;
+        _cache = new SecretsManagerCache(secretsManager);
     }
 
     public async Task<string> GetSecretAsync(string secretName)
     {
         try
         {
-            var request = new GetSecretValueRequest
-            {
-                SecretId = secretName
-            };
-
-            var response = await _secretsManager.GetSecretValueAsync(request);
-            return response.SecretString;
+            var secretString = await _cache.GetSecretString(secretName);
+            _logger.LogInformation($"Retrieved secret {secretName} (might be from cache)");
+            return secretString;
         }
         catch (ResourceNotFoundException)
         {

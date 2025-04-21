@@ -125,7 +125,7 @@ curl -X POST https://localhost:7099/api/Auth/token \
 
 ```shell script
 curl -X GET https://localhost:7099/api/Secured \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI"
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYWNrZW5kLXNlcnZpY2UtMSIsImp0aSI6IjJhMTkxZjhkLTQ4MjQtNDdjMy05ZTdiLTQ3M2I2OGI4ZGM4OCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6WyJTZXJ2aWNlIiwiRGF0YVJlYWRlciJdLCJleHAiOjE3NDUyNzAyNzIsImlzcyI6Ikp3dEF1dGhTZXJ2aWNlIiwiYXVkIjoiSnd0QXV0aENsaWVudHMifQ.ddr5pfhLKCo7HMux_4H7pXh3FBz3kVVgmqMwfD5TRLs"
 ```
 
 
