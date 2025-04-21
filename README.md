@@ -20,52 +20,51 @@ Este projeto implementa um serviço de autenticação utilizando tokens JWT (JSO
 
 ```mermaid
 flowchart TB
-  subgraph Controllers["Controllers"]
-    AuthController["Auth Controller"]
-    SecuredController["Secured Controller"]
-  end
-  subgraph Services["Services"]
-    JwtService["JWT Service"]
-    AwsSecrets["AWS Secrets Service"]
-    IAwsSecrets["IAwsSecretsService"]
-  end
-  subgraph Models["Models"]
-    LoginReq["LoginRequest"]
-    LoginResp["LoginResponse"]
-    ApiKey["ApiKeyModel"]
-  end
-  subgraph subGraph3["External Storage"]
-    AWS["AWS Secrets Manager"]
-    LocalStack["LocalStack"]
-  end
-  Client(["Cliente HTTP"]) -- "1. Requisição de Login" --> AuthController
-  Client -- "5. Requisição + Token" --> SecuredController
-  AuthController -- "2. Valida Credenciais" --> JwtService
-  AuthController -- "2.1 Obtém API Keys" --> AwsSecrets
-  AuthController -- "3. Cria" --> LoginResp
-  AuthController -- "2.2 Usa" --> LoginReq
-  AuthController -- "4. Retorna Token" --> Client
-  SecuredController -- "6. Verifica JWT" --> JwtService
-  JwtService -- Obtém Chave de Assinatura --> AwsSecrets
-  AwsSecrets -- Implementa --> IAwsSecrets
-  AwsSecrets -- Usa --> ApiKey
-  AwsSecrets -- Produção --> AWS
-  AwsSecrets -- Desenvolvimento --> LocalStack
+  classDef controllers stroke-width:1px, stroke-dasharray:none, stroke:#FF5978, fill:#FFDFE5, color:#8E2236
+  classDef services stroke-width:1px, stroke-dasharray:none, stroke:#374D7C, fill:#E2EBFF, color:#374D7C
+  classDef models stroke-width:1px, stroke-dasharray:none, stroke:#46EDC8, fill:#DEFFF8, color:#378E7A
+  classDef external stroke-width:1px, stroke-dasharray:none, stroke:#FBB35A, fill:#FFEFDB, color:#8F632D
 
-  AuthController:::Rose
-  SecuredController:::Rose
-  JwtService:::Sky
-  AwsSecrets:::Sky
-  IAwsSecrets:::Sky
-  LoginReq:::Aqua
-  LoginResp:::Aqua
-  ApiKey:::Aqua
-  AWS:::Peach
-  LocalStack:::Peach
-  classDef Peach stroke-width:1px, stroke-dasharray:none, stroke:#FBB35A, fill:#FFEFDB, color:#8F632D
-  classDef Sky stroke-width:1px, stroke-dasharray:none, stroke:#374D7C, fill:#E2EBFF, color:#374D7C
-  classDef Aqua stroke-width:1px, stroke-dasharray:none, stroke:#46EDC8, fill:#DEFFF8, color:#378E7A
-  classDef Rose stroke-width:1px, stroke-dasharray:none, stroke:#FF5978, fill:#FFDFE5, color:#8E2236
+  Client([Cliente HTTP])
+  Client -->|1. Requisição de Login| AuthController
+  Client -->|5. Requisição + Token| SecuredController
+
+  subgraph Controllers
+    AuthController[Auth Controller]:::controllers
+    SecuredController[Secured Controller]:::controllers
+  end
+
+  subgraph Services
+    JwtService[JWT Service]:::services
+    AwsSecrets[AWS Secrets Service]:::services
+    IAwsSecrets[IAwsSecretsService]:::services
+  end
+
+  subgraph Models
+    LoginReq[LoginRequest]:::models
+    LoginResp[LoginResponse]:::models
+    ApiKey[ApiKeyModel]:::models
+  end
+
+  subgraph "External Storage"
+    AWS[AWS Secrets Manager]:::external
+    LocalStack[LocalStack]:::external
+  end
+
+  AuthController -->|2. Valida Credenciais| JwtService
+  AuthController -->|2.1 Obtém API Keys| AwsSecrets
+  AuthController -->|3. Cria| LoginResp
+  AuthController -->|2.2 Usa| LoginReq
+  AuthController -->|4. Retorna Token| Client
+
+  SecuredController -->|6. Verifica JWT| JwtService
+
+  JwtService -->|Obtém Chave de Assinatura| AwsSecrets
+  AwsSecrets -->|Implementa| IAwsSecrets
+  AwsSecrets -->|Usa| ApiKey
+
+  AwsSecrets -->|Produção| AWS
+  AwsSecrets -->|Desenvolvimento| LocalStack
 ```
 
 ## Configuração e Execução
