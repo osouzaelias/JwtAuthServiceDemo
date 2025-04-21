@@ -16,6 +16,57 @@ Este projeto implementa um serviço de autenticação utilizando tokens JWT (JSO
 - Docker (para executar o LocalStack)
 - AWS CLI (para configuração local)
 
+## Arquitetura
+
+```mermaid
+flowchart TB
+  classDef controllers fill:#f9d6d6,stroke:#333,stroke-width:1px
+  classDef services fill:#d6e5f9,stroke:#333,stroke-width:1px
+  classDef models fill:#d6f9e0,stroke:#333,stroke-width:1px
+  classDef external fill:#e0d6f9,stroke:#333,stroke-width:1px
+
+  Client([Cliente HTTP])
+  Client -->|1. Requisição de Login| AuthController
+  Client -->|5. Requisição + Token| SecuredController
+
+  subgraph Controllers
+    AuthController[Auth Controller]:::controllers
+    SecuredController[Secured Controller]:::controllers
+  end
+
+  subgraph Services
+    JwtService[JWT Service]:::services
+    AwsSecrets[AWS Secrets Service]:::services
+    IAwsSecrets[IAwsSecretsService]:::services
+  end
+
+  subgraph Models
+    LoginReq[LoginRequest]:::models
+    LoginResp[LoginResponse]:::models
+    ApiKey[ApiKeyModel]:::models
+  end
+
+  subgraph "External Storage"
+    AWS[AWS Secrets Manager]:::external
+    LocalStack[LocalStack]:::external
+  end
+
+  AuthController -->|2. Valida Credenciais| JwtService
+  AuthController -->|2.1 Obtém API Keys| AwsSecrets
+  AuthController -->|3. Cria| LoginResp
+  AuthController -->|2.2 Usa| LoginReq
+  AuthController -->|4. Retorna Token| Client
+
+  SecuredController -->|6. Verifica JWT| JwtService
+
+  JwtService -->|Obtém Chave de Assinatura| AwsSecrets
+  AwsSecrets -->|Implementa| IAwsSecrets
+  AwsSecrets -->|Usa| ApiKey
+
+  AwsSecrets -->|Produção| AWS
+  AwsSecrets -->|Desenvolvimento| LocalStack
+```
+
 ## Configuração e Execução
 
 ### 1. Iniciar o LocalStack
